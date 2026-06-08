@@ -7,147 +7,31 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --border: #e2e0d8;
-    --border-strong: #c8c5bb;
-    --text: #1a1917;
-    --text-muted: #706e67;
-    --text-hint: #a09d94;
-    --accent: #1446a0;
-    --accent-light: #e8edf8;
-    --success: #1a6b3a;
-    --success-bg: #e8f5ee;
-    --warning: #7a4f00;
-    --warning-bg: #fef3db;
-    --danger: #991b1b;
-    --danger-bg: #fef2f2;
-    --radius: 10px;
-    --radius-sm: 6px;
+    --bg: #f5f4f0; --surface: #ffffff; --border: #e2e0d8; --border-strong: #c8c5bb;
+    --text: #1a1917; --text-muted: #706e67; --text-hint: #a09d94;
+    --accent: #1446a0; --accent-light: #e8edf8;
+    --success: #1a6b3a; --success-bg: #e8f5ee;
+    --warning: #7a4f00; --warning-bg: #fef3db;
+    --danger: #991b1b; --danger-bg: #fef2f2;
+    --radius: 10px; --radius-sm: 6px;
   }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-
-  .container { max-width: 860px; margin: 0 auto; }
-
-  header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 2.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .logo-mark {
-    width: 40px;
-    height: 40px;
-    background: var(--accent);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 900px; margin: 0 auto; }
+  header { display: flex; align-items: center; gap: 14px; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .logo-mark { width: 40px; height: 40px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px; flex-shrink: 0; }
   header h1 { font-size: 18px; font-weight: 500; }
   header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .card-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 1rem;
-  }
-
-  .step-row {
-    display: flex;
-    align-items: flex-end;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .field-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex: 1;
-    min-width: 200px;
-  }
-
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }
+  .card-title { font-size: 13px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
+  .step-row { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+  .field-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
   label { font-size: 13px; font-weight: 500; color: var(--text); }
-
-  select {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--text);
-    background: var(--surface);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    padding: 9px 12px;
-    width: 100%;
-    appearance: none;
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-
-  select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(20,70,160,0.08);
-  }
-
+  select { font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 9px 12px; width: 100%; appearance: none; cursor: pointer; outline: none; transition: border-color 0.15s; }
+  select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(20,70,160,0.08); }
   .select-wrapper { position: relative; flex: 1; }
-
-  .select-wrapper::after {
-    content: '';
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0; height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 5px solid var(--text-muted);
-    pointer-events: none;
-  }
-
-  .btn {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 9px 20px;
-    border-radius: var(--radius-sm);
-    border: none;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
+  .select-wrapper::after { content: ''; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--text-muted); pointer-events: none; }
+  .btn { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 9px 20px; border-radius: var(--radius-sm); border: none; cursor: pointer; transition: all 0.15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
   .btn:disabled { opacity: 0.45; cursor: not-allowed; }
   .btn-primary { background: var(--accent); color: white; }
   .btn-primary:hover:not(:disabled) { background: #0f3a8a; }
@@ -155,120 +39,48 @@
   .btn-secondary:hover:not(:disabled) { background: var(--bg); }
   .btn-success { background: var(--success); color: white; }
   .btn-success:hover:not(:disabled) { background: #145530; }
-
-  .spinner {
-    width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: none;
-  }
-
+  .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading .spinner { display: block; }
   .loading .btn-label { display: none; }
 
-  textarea {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    line-height: 1.7;
-    color: var(--text);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 1rem;
-    width: 100%;
-    resize: vertical;
-    min-height: 420px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
+  /* Abas */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 1rem; }
+  .tab-btn { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 18px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
 
-  textarea:focus {
-    border-color: var(--accent);
-    background: var(--surface);
-    box-shadow: 0 0 0 3px rgba(20,70,160,0.06);
-  }
-
-  .editor-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
+  textarea { font-family: 'DM Mono', monospace; font-size: 13px; line-height: 1.7; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; width: 100%; resize: vertical; min-height: 420px; outline: none; transition: border-color 0.15s; }
+  textarea:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px rgba(20,70,160,0.06); }
+  .editor-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
   .editor-meta { font-size: 12px; color: var(--text-hint); font-family: 'DM Mono', monospace; }
-
   .action-row { display: flex; gap: 10px; margin-top: 1rem; flex-wrap: wrap; }
-
-  .alert {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    line-height: 1.5;
-    margin-top: 1rem;
-  }
-
+  .alert { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.5; margin-top: 1rem; }
   .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #b6e0c8; }
   .alert-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid #f5d98a; }
-  .alert-danger  { background: var(--danger-bg);  color: var(--danger);  border: 1px solid #fca5a5; }
+  .alert-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid #fca5a5; }
   .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-
   .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1rem; }
-
-  .status-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 500;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text-hint);
-  }
-
+  .status-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; border: 1px solid var(--border); background: var(--bg); color: var(--text-hint); }
   .status-item.ok { background: var(--success-bg); border-color: #b6e0c8; color: var(--success); }
   .status-item.fail { background: var(--danger-bg); border-color: #fca5a5; color: var(--danger); }
-
   .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-
-  .version-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    background: var(--accent-light);
-    color: var(--accent);
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-weight: 500;
-  }
-
-  .status-tag {
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-weight: 500;
-    margin-left: 6px;
-  }
-
-  .status-dev { background: #FEF3DB; color: #7a4f00; }
-  .status-done { background: var(--success-bg); color: var(--success); }
-
+  .version-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--accent-light); color: var(--accent); padding: 2px 8px; border-radius: 20px; font-weight: 500; }
   .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
   .hidden { display: none !important; }
+
+  /* Encaminhamentos */
+  .client-section { margin-bottom: 1.5rem; }
+  .client-header { font-size: 14px; font-weight: 600; color: var(--accent); padding: 8px 12px; background: var(--accent-light); border-radius: var(--radius-sm); margin-bottom: 8px; }
+  .module-header { font-size: 13px; font-weight: 500; color: var(--text-muted); margin: 8px 0 4px 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .task-item-enc { font-size: 13px; color: var(--text); padding: 6px 12px; border-left: 2px solid var(--border); margin-left: 4px; margin-bottom: 4px; line-height: 1.5; }
+  .enc-empty { font-size: 13px; color: var(--text-hint); font-style: italic; padding: 1rem; text-align: center; }
 </style>
 </head>
 <body>
-
 <div class="container">
-
   <header>
     <div class="logo-mark">N</div>
     <div>
@@ -277,7 +89,7 @@
     </div>
   </header>
 
-  <!-- Etapa 1: Selecionar versão -->
+  <!-- Etapa 1 -->
   <div class="card" id="card-select">
     <div class="card-title">Etapa 1 — Selecionar versão</div>
     <div class="step-row">
@@ -297,7 +109,7 @@
     <div id="alert-select" class="hidden"></div>
   </div>
 
-  <!-- Etapa 2: Revisar e editar -->
+  <!-- Etapa 2 -->
   <div class="card hidden" id="card-editor">
     <div class="card-title">Etapa 2 — Revisar e editar</div>
     <div class="editor-toolbar">
@@ -307,18 +119,35 @@
       </div>
       <span class="editor-meta" id="char-count"></span>
     </div>
-    <textarea id="editor" placeholder="O release notes gerado aparecerá aqui..." oninput="updateCount()"></textarea>
-    <div class="action-row">
-      <button class="btn btn-success" id="btn-publicar" onclick="publicar()">
-        <span class="spinner" id="spinner-publicar"></span>
-        <span class="btn-label">Confirmar e publicar</span>
-      </button>
-      <button class="btn btn-secondary" onclick="resetar()">Cancelar</button>
+
+    <!-- Abas -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="trocarAba('rn')">Release Notes — Revisar e Publicar</button>
+      <button class="tab-btn" onclick="trocarAba('enc')">Encaminhamentos para Clientes</button>
     </div>
-    <div id="alert-editor" class="hidden"></div>
+
+    <!-- Aba Release Notes -->
+    <div class="tab-panel active" id="tab-rn">
+      <textarea id="editor" placeholder="O release notes gerado aparecerá aqui..." oninput="updateCount()"></textarea>
+      <div class="action-row">
+        <button class="btn btn-success" id="btn-publicar" onclick="publicar()">
+          <span class="spinner" id="spinner-publicar"></span>
+          <span class="btn-label">Confirmar e publicar</span>
+        </button>
+        <button class="btn btn-secondary" onclick="resetar()">Cancelar</button>
+      </div>
+      <div id="alert-editor" class="hidden"></div>
+    </div>
+
+    <!-- Aba Encaminhamentos -->
+    <div class="tab-panel" id="tab-enc">
+      <div id="enc-content" style="padding: 0.5rem 0;">
+        <div class="enc-empty">Gere o release notes para ver os encaminhamentos.</div>
+      </div>
+    </div>
   </div>
 
-  <!-- Etapa 3: Confirmação -->
+  <!-- Etapa 3 -->
   <div class="card hidden" id="card-confirm">
     <div class="card-title">Etapa 3 — Publicação</div>
     <div class="alert alert-success" id="alert-publicacao">
@@ -326,25 +155,27 @@
       <div id="alert-msg">Publicando release notes...</div>
     </div>
     <div class="status-grid">
-      <div class="status-item" id="status-supabase">
-        <div class="status-dot"></div>
-        <span>Supabase</span>
-      </div>
-      <div class="status-item" id="status-movidesk">
-        <div class="status-dot"></div>
-        <span>ClickUp</span>
-      </div>
+      <div class="status-item" id="status-supabase"><div class="status-dot"></div><span>Supabase</span></div>
+      <div class="status-item" id="status-movidesk"><div class="status-dot"></div><span>ClickUp</span></div>
     </div>
     <div class="divider"></div>
     <button class="btn btn-secondary" onclick="resetar()">Gerar outro release</button>
   </div>
-
 </div>
 
 <script>
-const WEBHOOK_VERSOES = 'https://najabot.app.n8n.cloud/webhook/buscar-versoes';
-const WEBHOOK_GERAR   = 'https://najabot.app.n8n.cloud/webhook/gerar-release-notes';
+const WEBHOOK_VERSOES  = 'https://najabot.app.n8n.cloud/webhook/buscar-versoes';
+const WEBHOOK_GERAR    = 'https://najabot.app.n8n.cloud/webhook/gerar-release-notes';
 const WEBHOOK_PUBLICAR = 'https://najabot.app.n8n.cloud/webhook/publicar-release-notes';
+
+let tasksData = [];
+
+function trocarAba(aba) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + aba).classList.add('active');
+  event.target.classList.add('active');
+}
 
 async function carregarVersoes() {
   const sel = document.getElementById('version-select');
@@ -352,21 +183,17 @@ async function carregarVersoes() {
     const res = await fetch(WEBHOOK_VERSOES);
     const data = await res.json();
     const tasks = data.tasks || [];
-
     sel.innerHTML = '<option value="">Selecione uma versão...</option>';
     tasks.forEach(t => {
       const opt = document.createElement('option');
       opt.value = t.id;
       opt.dataset.name = t.name;
       const tag = t.status === 'finalizada' ? '✓ finalizada' : 'em desenvolvimento';
-      opt.textContent = `${t.name}  —  ${tag}`;
+      opt.textContent = t.name + '  —  ' + tag;
       sel.appendChild(opt);
     });
-
     sel.disabled = false;
-    sel.onchange = () => {
-      document.getElementById('btn-gerar').disabled = !sel.value;
-    };
+    sel.onchange = () => { document.getElementById('btn-gerar').disabled = !sel.value; };
   } catch(e) {
     sel.innerHTML = '<option value="">Erro ao carregar versões</option>';
     mostrarAlerta('alert-select', 'danger', 'Não foi possível carregar as versões. Verifique a conexão com o n8n.');
@@ -391,13 +218,15 @@ async function gerarReleaseNotes() {
       body: JSON.stringify({ task_id: taskId, version })
     });
     const data = await res.json();
-    const content = data.content || (Array.isArray(data) && data[0]?.content) || '';
+    const content = data.content || (Array.isArray(data) && data[0] && data[0].content) || '';
+    tasksData = data.tasks || (Array.isArray(data) && data[0] && data[0].tasks) || [];
     if (!content) throw new Error('Conteúdo vazio');
 
     document.getElementById('editor').value = content;
     document.getElementById('version-label').textContent = version;
     document.getElementById('version-label').dataset.taskId = taskId;
     updateCount();
+    gerarEncaminhamentos(tasksData, version);
     document.getElementById('card-editor').classList.remove('hidden');
     document.getElementById('card-editor').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch(e) {
@@ -406,6 +235,57 @@ async function gerarReleaseNotes() {
     btn.classList.remove('loading');
     btn.disabled = false;
   }
+}
+
+function gerarEncaminhamentos(tasks, version) {
+  const container = document.getElementById('enc-content');
+  if (!tasks || tasks.length === 0) {
+    container.innerHTML = '<div class="enc-empty">Nenhuma tarefa encontrada.</div>';
+    return;
+  }
+
+  // Monta mapa cliente -> modulo -> tasks
+  const mapa = {};
+
+  tasks.forEach(function(task) {
+    const tags = task.tags || [];
+    const clienteTags = tags.filter(function(t) { return t.name && t.name.toLowerCase().startsWith('c:'); });
+    const clientes = clienteTags.length > 0
+      ? clienteTags.map(function(t) { return t.name.substring(2).trim().toUpperCase(); })
+      : ['[TODOS]'];
+
+    const modulo = task.modulo || 'Geral';
+    const titulo = task.titulo || '';
+
+    clientes.forEach(function(cliente) {
+      if (!mapa[cliente]) mapa[cliente] = {};
+      if (!mapa[cliente][modulo]) mapa[cliente][modulo] = [];
+      mapa[cliente][modulo].push(titulo);
+    });
+  });
+
+  // Ordena clientes — [TODOS] sempre por último
+  const clientesOrdenados = Object.keys(mapa).sort(function(a, b) {
+    if (a === '[TODOS]') return 1;
+    if (b === '[TODOS]') return -1;
+    return a.localeCompare(b);
+  });
+
+  let html = '';
+  clientesOrdenados.forEach(function(cliente) {
+    html += '<div class="client-section">';
+    html += '<div class="client-header">' + cliente + '</div>';
+    const modulos = mapa[cliente];
+    Object.keys(modulos).sort().forEach(function(modulo) {
+      html += '<div class="module-header">' + modulo + '</div>';
+      modulos[modulo].forEach(function(titulo) {
+        html += '<div class="task-item-enc">• ' + titulo + '</div>';
+      });
+    });
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
 }
 
 async function publicar() {
@@ -431,7 +311,7 @@ async function publicar() {
     const res = await fetch(WEBHOOK_PUBLICAR, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ version, title: `Release Notes ${version}`, content, task_id: document.getElementById('version-label').dataset.taskId })
+      body: JSON.stringify({ version: version, title: 'Release Notes ' + version, content: content, task_id: document.getElementById('version-label').dataset.taskId })
     });
     const data = await res.json();
     setStatus('status-supabase', data.supabase !== false ? 'ok' : 'fail', 'Supabase');
@@ -451,20 +331,20 @@ async function publicar() {
 
 function setStatus(id, state, label) {
   const el = document.getElementById(id);
-  el.className = `status-item ${state}`;
-  el.innerHTML = `<div class="status-dot"></div><span>${label} — ${state === 'ok' ? 'salvo com sucesso' : 'erro ao salvar'}</span>`;
+  el.className = 'status-item ' + state;
+  el.innerHTML = '<div class="status-dot"></div><span>' + label + ' — ' + (state === 'ok' ? 'salvo com sucesso' : 'erro ao salvar') + '</span>';
 }
 
 function updateCount() {
   const txt = document.getElementById('editor').value;
-  document.getElementById('char-count').textContent = `${txt.length} caracteres`;
+  document.getElementById('char-count').textContent = txt.length + ' caracteres';
 }
 
 function mostrarAlerta(id, tipo, msg) {
   const el = document.getElementById(id);
   const icone = tipo === 'success' ? '✓' : tipo === 'warning' ? '⚠' : '✕';
-  el.className = `alert alert-${tipo}`;
-  el.innerHTML = `<span class="alert-icon">${icone}</span><div>${msg}</div>`;
+  el.className = 'alert alert-' + tipo;
+  el.innerHTML = '<span class="alert-icon">' + icone + '</span><div>' + msg + '</div>';
 }
 
 function resetar() {
@@ -474,6 +354,7 @@ function resetar() {
   document.getElementById('version-select').value = '';
   document.getElementById('btn-gerar').disabled = true;
   document.getElementById('alert-select').className = 'hidden';
+  tasksData = [];
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
