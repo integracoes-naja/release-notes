@@ -324,6 +324,71 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(20,70,160,0.08);
 }
 
+/* ── PREVIEW / TOGGLE ── */
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.view-toggle {
+  display: flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.toggle-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-hint);
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+
+.toggle-btn.active {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  font-weight: 600;
+}
+
+.toggle-btn:hover:not(.active) { color: var(--text-muted); }
+
+.html-preview-wrap {
+  width: 100%;
+  min-height: 400px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.preview-empty {
+  padding: 3rem 2rem;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-hint);
+}
+
+#preview-frame {
+  width: 100%;
+  min-height: 400px;
+  border: none;
+  display: block;
+}
+
 .action-row {
   display: flex;
   gap: 10px;
@@ -351,7 +416,7 @@ textarea:focus {
 /* ── STATUS GRID ── */
 .status-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
   margin-top: 1rem;
 }
@@ -507,12 +572,33 @@ textarea:focus {
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="trocarAba('rn', event)">Release Notes — Revisar e Publicar</button>
+      <button class="tab-btn active" onclick="trocarAba('rn', event)">Texto do release notes</button>
       <button class="tab-btn" onclick="trocarAba('enc', event)">Encaminhamentos para Clientes</button>
     </div>
 
     <div class="tab-panel active" id="tab-rn">
-      <textarea id="editor" placeholder="O release notes gerado aparecerá aqui..." oninput="updateCount()"></textarea>
+      <div class="preview-toolbar">
+        <div class="view-toggle">
+          <button class="toggle-btn active" id="btn-view-preview" onclick="setViewMode('preview')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Visualizar
+          </button>
+          <button class="toggle-btn" id="btn-view-code" onclick="setViewMode('code')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Editar Texto
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview renderizado -->
+      <div id="html-preview" class="html-preview-wrap">
+        <div class="preview-empty" id="preview-placeholder">O release notes gerado aparecerá aqui como prévia.</div>
+        <iframe id="preview-frame" class="hidden" sandbox="allow-same-origin"></iframe>
+      </div>
+
+      <!-- Editor de código -->
+      <textarea id="editor" class="hidden" placeholder="O texto do release notes aparecerá aqui para edição..." oninput="updateCount(); syncPreview()"></textarea>
+
       <div class="action-row">
         <button class="btn btn-success" id="btn-publicar" onclick="publicar()">
           <span class="spinner" id="spinner-publicar"></span>
@@ -543,6 +629,7 @@ textarea:focus {
     <div class="status-grid">
       <div class="status-item" id="status-supabase"><div class="status-dot"></div><span>Supabase</span></div>
       <div class="status-item" id="status-movidesk"><div class="status-dot"></div><span>ClickUp</span></div>
+      <div class="status-item" id="status-gchat"><div class="status-dot"></div><span>Google Chat</span></div>
     </div>
     <div class="divider"></div>
     <button class="btn btn-secondary" onclick="resetar()">Gerar outro release</button>
@@ -625,6 +712,7 @@ async function gerarReleaseNotes() {
       body: JSON.stringify({ task_id: taskId, version })
     });
     const data    = await res.json();
+    // O n8n retorna content (texto) e tasks (array de tarefas formatadas)
     const content = data.content || (Array.isArray(data) && data[0] && data[0].content) || '';
     tasksData = data.tasks || (Array.isArray(data) && data[0] && data[0].tasks) || [];
     if (!content) throw new Error('Conteúdo vazio');
@@ -633,6 +721,8 @@ async function gerarReleaseNotes() {
     document.getElementById('version-label').textContent = version;
     document.getElementById('version-label').dataset.taskId = taskId;
     updateCount();
+    setViewMode('preview');
+    syncPreview();
     gerarEncaminhamentos(tasksData, version);
     document.getElementById('card-editor').classList.remove('hidden');
     document.getElementById('card-editor').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -691,9 +781,10 @@ function gerarEncaminhamentos(tasks, version) {
 }
 
 async function publicar() {
-  const content = document.getElementById('editor').value.trim();
+  const rawText = document.getElementById('editor').value.trim();
+  if (!rawText) return;
+  const content = textToHtml(rawText);
   const version = document.getElementById('version-label').textContent;
-  if (!content) return;
 
   const btn = document.getElementById('btn-publicar');
   btn.classList.add('loading');
@@ -707,23 +798,40 @@ async function publicar() {
   document.getElementById('status-supabase').innerHTML = '<div class="status-dot"></div><span>Supabase — aguardando...</span>';
   document.getElementById('status-movidesk').className = 'status-item';
   document.getElementById('status-movidesk').innerHTML = '<div class="status-dot"></div><span>ClickUp — aguardando...</span>';
+  document.getElementById('status-gchat').className = 'status-item';
+  document.getElementById('status-gchat').innerHTML = '<div class="status-dot"></div><span>Google Chat — aguardando...</span>';
   document.getElementById('card-confirm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   try {
+    // Envia o conteúdo do editor (HTML gerado pelo n8n, possivelmente editado)
+    // O n8n é responsável por salvar no Supabase, atualizar o ClickUp e notificar o GChat
     const res = await fetch(WEBHOOK_PUBLICAR, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ version, title: 'Release Notes ' + version, content, task_id: document.getElementById('version-label').dataset.taskId })
+      body: JSON.stringify({
+        version,
+        title: 'Release Notes ' + version,
+        content,
+        task_id: document.getElementById('version-label').dataset.taskId,
+        tasks: tasksData
+      })
     });
     const data = await res.json();
     setStatus('status-supabase', data.supabase !== false ? 'ok' : 'fail', 'Supabase');
+    setStatus('status-movidesk', data.clickup  !== false ? 'ok' : 'fail', 'ClickUp');
+    setStatus('status-gchat',   data.gchat    !== false ? 'ok' : 'fail', 'Google Chat');
+
+    const tudoOk = (data.supabase !== false) && (data.clickup !== false) && (data.gchat !== false);
     document.getElementById('alert-publicacao').className = 'alert alert-success';
     document.getElementById('alert-icon').textContent = '✓';
-    document.getElementById('alert-msg').textContent = 'Release notes publicado com sucesso!';
-    setStatus('status-movidesk', data.clickup !== false ? 'ok' : 'fail', 'ClickUp');
+    document.getElementById('alert-msg').textContent = tudoOk
+      ? 'Release notes publicado com sucesso!'
+      : 'Publicado com atenção — verifique os status abaixo.';
+
   } catch(e) {
     setStatus('status-supabase', 'fail', 'Supabase');
     setStatus('status-movidesk', 'fail', 'ClickUp');
+    setStatus('status-gchat',    'fail', 'Google Chat');
     mostrarAlerta('alert-editor', 'danger', 'Erro ao publicar. Verifique a conexão e tente novamente.');
   } finally {
     btn.classList.remove('loading');
@@ -735,6 +843,113 @@ function setStatus(id, state, label) {
   const el = document.getElementById(id);
   el.className = 'status-item ' + state;
   el.innerHTML = '<div class="status-dot"></div><span>' + label + ' — ' + (state === 'ok' ? 'salvo com sucesso' : 'erro ao salvar') + '</span>';
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function applyInlineFormat(str) {
+  return str
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
+}
+
+function textToHtml(text) {
+  if (!text.trim()) return '';
+  const lines = text.split('\n');
+  let body = '';
+  let inList = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const h1 = raw.match(/^#\s+(.*)/);
+    const h2 = raw.match(/^##\s+(.*)/);
+    const h3 = raw.match(/^###\s+(.*)/);
+    const li = raw.match(/^[-*•]\s+(.*)/);
+
+    if (h3) {
+      if (inList) { body += '</ul>\n'; inList = false; }
+      body += '<h3>' + applyInlineFormat(escapeHtml(h3[1])) + '</h3>\n';
+    } else if (h2) {
+      if (inList) { body += '</ul>\n'; inList = false; }
+      body += '<h2>' + applyInlineFormat(escapeHtml(h2[1])) + '</h2>\n';
+    } else if (h1) {
+      if (inList) { body += '</ul>\n'; inList = false; }
+      body += '<h1>' + applyInlineFormat(escapeHtml(h1[1])) + '</h1>\n';
+    } else if (li) {
+      if (!inList) { body += '<ul>\n'; inList = true; }
+      body += '<li>' + applyInlineFormat(escapeHtml(li[1])) + '</li>\n';
+    } else if (raw.trim() === '') {
+      if (inList) { body += '</ul>\n'; inList = false; }
+    } else {
+      if (inList) { body += '</ul>\n'; inList = false; }
+      body += '<p>' + applyInlineFormat(escapeHtml(raw)) + '</p>\n';
+    }
+  }
+  if (inList) body += '</ul>\n';
+
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    + '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">'
+    + '<style>'
+    + 'body{font-family:Inter,-apple-system,sans-serif;line-height:1.75;color:#111118;padding:2rem 2.5rem;max-width:760px;margin:0 auto;}'
+    + 'h1{font-size:1.45rem;font-weight:700;color:#111118;margin:0 0 1.25rem;padding-bottom:.75rem;border-bottom:2px solid #e2e2e8;}'
+    + 'h2{font-size:1.05rem;font-weight:700;color:#1446a0;margin:1.75rem 0 .55rem;}'
+    + 'h3{font-size:.9rem;font-weight:600;color:#5a5a6e;text-transform:uppercase;letter-spacing:.05em;margin:1.25rem 0 .4rem;}'
+    + 'ul{margin:.25rem 0 1rem 0;padding-left:1.4rem;}'
+    + 'li{margin-bottom:.35rem;font-size:.875rem;}'
+    + 'p{margin:0 0 .75rem;font-size:.875rem;}'
+    + 'strong{font-weight:600;}'
+    + '</style></head><body>' + body + '</body></html>';
+}
+
+function syncPreview() {
+  const text = document.getElementById('editor').value;
+  const frame = document.getElementById('preview-frame');
+  const placeholder = document.getElementById('preview-placeholder');
+  if (!text.trim()) {
+    frame.classList.add('hidden');
+    placeholder.style.display = '';
+    return;
+  }
+  placeholder.style.display = 'none';
+  frame.classList.remove('hidden');
+  const doc = frame.contentDocument || frame.contentWindow.document;
+  doc.open();
+  doc.write(textToHtml(text));
+  doc.close();
+  // Ajusta altura ao conteúdo
+  setTimeout(function() {
+    try {
+      const h = frame.contentDocument.body.scrollHeight;
+      if (h > 0) frame.style.height = h + 'px';
+    } catch(e) {}
+  }, 150);
+}
+
+function setViewMode(mode) {
+  const preview = document.getElementById('html-preview');
+  const editor  = document.getElementById('editor');
+  const btnPrev = document.getElementById('btn-view-preview');
+  const btnCode = document.getElementById('btn-view-code');
+
+  if (mode === 'preview') {
+    preview.style.display = '';
+    editor.classList.add('hidden');
+    btnPrev.classList.add('active');
+    btnCode.classList.remove('active');
+    syncPreview();
+  } else {
+    preview.style.display = 'none';
+    editor.classList.remove('hidden');
+    btnPrev.classList.remove('active');
+    btnCode.classList.add('active');
+    editor.focus();
+  }
 }
 
 function updateCount() {
@@ -753,6 +968,13 @@ function resetar() {
   document.getElementById('card-editor').classList.add('hidden');
   document.getElementById('card-confirm').classList.add('hidden');
   document.getElementById('editor').value = '';
+  // Reset preview
+  const frame = document.getElementById('preview-frame');
+  frame.classList.add('hidden');
+  frame.style.height = '';
+  document.getElementById('preview-placeholder').style.display = '';
+  // Volta para modo preview
+  setViewMode('preview');
   document.getElementById('app-select').value = '';
   document.getElementById('version-select').value = '';
   document.getElementById('version-select').disabled = true;
