@@ -1,7 +1,7 @@
 # Release Notes — Mapa do Projeto
 
 Projeto: gerador/publicador de release notes da Naja.
-Dois arquivos principais: `index.html` (frontend) e `Publicar Release Notes.json` (workflow n8n).
+Arquivo versionado: `index.html` (frontend). Os workflows n8n são gerenciados diretamente na instância e não estão no repositório (`.gitignore` cobre `*.json`).
 
 > **Regra de manutenção:** sempre que qualquer arquivo do projeto for alterado, atualizar este `CLAUDE.md` imediatamente — linhas, funções, nós ou seções afetadas. O mapa deve refletir o estado atual do código. Não espere ser solicitado.
 
@@ -65,26 +65,28 @@ Dois arquivos principais: `index.html` (frontend) e `Publicar Release Notes.json
 
 ---
 
-## Publicar Release Notes.json (workflow n8n, 555 linhas)
+## Workflow n8n — Publicar Release Notes
+
+Os arquivos JSON dos workflows não estão no repositório. A documentação abaixo serve como referência para manutenção diretamente no n8n.
 
 ### Nós (nodes)
 
-| Nó | Linhas | Tipo | O que faz |
-|---|---|---|---|
-| `Receber Publicação` | L5–L19 | Webhook POST | Recebe payload em `/publicar-release-notes` |
-| `Verificar Release Existente` | L21–L50 | Supabase getAll | Busca em `release_notes` pelo campo `version` |
-| `Release já existe?` | L52–L85 | IF | Verifica se `$json.id` existe (branch true = atualizar, false = criar) |
-| `Atualizar Release` | L87–L126 | Supabase update | Atualiza `content` e `published_at` pelo `id` |
-| `Criar Release` | L128–L161 | Supabase insert | Insere `version`, `title`, `content` |
-| `Retornar Confirmação Atualizar` | L163–L191 | Respond to Webhook | Resposta com headers CORS (branch atualizar) |
-| `Retornar Confirmação Criar` | L193–L221 | Respond to Webhook | Resposta com headers CORS (branch criar) |
-| `Atualizar Descrição no ClickUp Atualizar` | L222–L266 | HTTP PUT | PUT na API ClickUp `/list/{task_id}` com campo `content` = `body.text` (plain text) |
-| `Atualizar Descrição no ClickUp Criar` | L267–L311 | HTTP PUT | PUT na API ClickUp `/list/{task_id}` com campo `description` = `body.text` (plain text) |
-| `Preparar Resposta Final Atualizar` | L312–L324 | Code | Retorna `{ supabase: true, clickup: true }` |
-| `Preparar Resposta Final Criar` | L325–L337 | Code | Retorna `{ supabase: true, clickup: true }` |
-| `Montar Mensagem Google Chat` | L338–L350 | Code | Monta texto com resumo por cliente/módulo a partir de `tasks` |
-| `Notificar Google Chat Atualizar` | L351–L377 | HTTP POST | Envia mensagem ao GChat (branch atualizar); body usa `JSON.stringify(...)` para escapar `\n` e caracteres especiais |
-| `Notificar Google Chat Criar` | L378–L404 | HTTP POST | Envia mensagem ao GChat (branch criar); body usa `JSON.stringify(...)` para escapar `\n` e caracteres especiais |
+| Nó | Tipo | O que faz |
+|---|---|---|
+| `Receber Publicação` | Webhook POST | Recebe payload em `/publicar-release-notes` |
+| `Montar Mensagem Google Chat` | Code | **Primeiro nó a executar.** Monta texto com resumo por cliente/módulo a partir de `tasks` |
+| `Verificar Release Existente` | Supabase getAll | Busca em `release_notes` pelo campo `version` |
+| `Release já existe?` | IF | Verifica se `$json.id` existe (true = atualizar, false = criar) |
+| `Atualizar Release` | Supabase update | Atualiza `content` (HTML) e `published_at` pelo `id` |
+| `Criar Release` | Supabase insert | Insere `version`, `title`, `content` (HTML) |
+| `Atualizar Descrição no ClickUp Atualizar` | HTTP PUT | PUT `/list/{task_id}`; campo `content` = `body.text` (plain text) |
+| `Atualizar Descrição no ClickUp Criar` | HTTP PUT | PUT `/list/{task_id}`; campo `description` = `body.text` (plain text) |
+| `Notificar Google Chat Atualizar` | HTTP POST | Envia ao GChat; body via `JSON.stringify(...)` para escapar `\n` |
+| `Notificar Google Chat Criar` | HTTP POST | Envia ao GChat; body via `JSON.stringify(...)` para escapar `\n` |
+| `Preparar Resposta Final Atualizar` | Code | Retorna `{ supabase: true, clickup: true }` |
+| `Preparar Resposta Final Criar` | Code | Retorna `{ supabase: true, clickup: true }` |
+| `Retornar Confirmação Atualizar` | Respond to Webhook | Resposta com headers CORS |
+| `Retornar Confirmação Criar` | Respond to Webhook | Resposta com headers CORS |
 
 ### Fluxo
 
@@ -95,16 +97,16 @@ Receber Publicação
                                            └─[false]─► Criar Release    ─► ClickUp Criar     ─► GChat Criar     ─► Preparar Criar     ─► Retornar Criar
 ```
 
-> `Montar Mensagem Google Chat` roda antes de tudo — garante que os nós de GChat consigam referenciar `$('Montar Mensagem Google Chat').first()` sem erro de nó não conectado.
+### Payload recebido pelo webhook
 
-### Credenciais e URLs externas
-
-| Item | Localização no JSON |
+| Campo | Conteúdo |
 |---|---|
-| Supabase credential ID | `"id": "l9PJBZIJPsr9u4U5"` (nos nós Supabase) |
-| ClickUp credential ID | `"id": "QJt52hlsET8584yU"` (nos nós HTTP ClickUp) |
-| Google Chat webhook URL | L354 e L381 (nós `Notificar Google Chat *`) |
-| ClickUp API key (header Authorization) | L231 e L276 |
+| `version` | string da versão |
+| `title` | `"Release Notes {version}"` |
+| `content` | HTML gerado pelo frontend (vai para o Supabase) |
+| `text` | plain text do editor (vai para o ClickUp) |
+| `task_id` | ID da list no ClickUp |
+| `tasks` | array com dados das tasks (usado pelo nó de montagem do GChat) |
 
 ---
 
@@ -115,6 +117,4 @@ Indique o que quer mudar e onde. Exemplos:
 - "alterar cor de destaque" → CSS Variables, `index.html:L11`
 - "adicionar nova aplicação no select" → `index.html:L537–L539`
 - "mudar URL do webhook de publicar" → `index.html:L643`
-- "ajustar mensagem do Google Chat" → `Publicar Release Notes.json:L338–L350` (nó `Montar Mensagem Google Chat`)
-- "adicionar campo no Criar Release" → `Publicar Release Notes.json:L128–L161`
-- "mudar comportamento do botão publicar" → `index.html:L783–L841` (função `publicar()`)
+- "mudar comportamento do botão publicar" → `index.html:L783–L842` (função `publicar()`)
