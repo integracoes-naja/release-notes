@@ -812,6 +812,7 @@ async function publicar() {
         version,
         title: 'Release Notes ' + version,
         content,
+        text: rawText,
         task_id: document.getElementById('version-label').dataset.taskId,
         tasks: tasksData
       })
